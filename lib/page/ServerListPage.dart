@@ -1,6 +1,7 @@
 import 'package:crab/model/ServerInfo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ServerListPage extends StatefulWidget {
   @override
@@ -9,7 +10,12 @@ class ServerListPage extends StatefulWidget {
 
 class ServerPageState extends State<ServerListPage> {
   final formKey = GlobalKey<FormState>();
-  List<ServerInfo> serverInfoList = List();
+  // ServerDBHelper serverDBHelper = new ServerDBHelper();
+  List<ServerInfo> serverInfoList = new List();
+  final serverNameController = TextEditingController();
+  final serverUrlController = TextEditingController();
+  String serverName;
+  String serverUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -30,8 +36,8 @@ class ServerPageState extends State<ServerListPage> {
     return ListView.separated(
       itemCount: serverInfoList.length,
       itemBuilder: (BuildContext context, int index) {
-        String name = serverInfoList[index].serverName;
-        String url = serverInfoList[index].serverURL;
+        String name = serverInfoList[index].name;
+        String url = serverInfoList[index].url;
         return ListTile(
           title: Text('$name'),
           subtitle: Text('$url'),
@@ -65,6 +71,7 @@ class ServerPageState extends State<ServerListPage> {
                   decoration: InputDecoration(
                     labelText: '服务器名称',
                   ),
+                  controller: serverNameController,
                 ),
                 SizedBox(
                   height: 15,
@@ -73,6 +80,7 @@ class ServerPageState extends State<ServerListPage> {
                   decoration: InputDecoration(
                     labelText: '服务器地址',
                   ),
+                  controller: serverUrlController,
                 ),
               ],
             )),
@@ -82,9 +90,15 @@ class ServerPageState extends State<ServerListPage> {
                 onPressed: () => Navigator.of(context).pop(),
               ),
               FlatButton(
-                child: Text('添加'),
-                onPressed: () => Navigator.of(context).pop(),
-              )
+                  child: Text('添加'),
+                  onPressed: () {
+                    ServerInfo serverInfo = new ServerInfo(
+                        id: null,
+                        name: serverNameController.text,
+                        url: serverUrlController.text,
+                        isSelected: false);
+                    Navigator.of(context).pop();
+                  })
             ],
           );
         });
@@ -92,8 +106,8 @@ class ServerPageState extends State<ServerListPage> {
 
   void addServer() {
     for (int i = 0; i < 10; i++) {
-      serverInfoList.add(new ServerInfo(i, '服务器名称: ' + i.toString(),
-          '服务器地址: www.xxx' + i.toString() + '.com', true));
+      serverInfoList.add(new ServerInfo(
+          id: i, name: '服务器：$i', url: 'www.$i$i$i.com', isSelected: false));
     }
   }
 }
